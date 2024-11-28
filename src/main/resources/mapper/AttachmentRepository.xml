@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lec.spring.repository.AttachmentRepository">
+    <insert id="insert" flushCache="true" parameterType="arraylist">
+    insert into t5_attachment(sourcename, filename, post_id)
+    values
+        <foreach collection="list" item="e" separator=",">
+            (#{e.sourcename}, #{e.filename}, #{param2})
+        </foreach>
+    </insert>
+
+    <insert id="save" flushCache="true" parameterType="com.lec.spring.domain.Attachment">
+        insert into t5_attachment(sourcename, filename, post_id)
+        values
+            (#{sourcename}, #{filename}, #{post_id})
+    </insert>
+
+    <sql id="SELECTFILE">
+        select id, sourcename, filename, post_id
+        from t5_attachment
+        where 1=1
+    </sql>
+
+    <select id="findByPost" resultType="com.lec.spring.domain.Attachment">
+        <include refid="SELECTFILE"/>
+        and post_id = #{param1}
+        order by id asc
+    </select>
+
+    <select id="findById" resultType="com.lec.spring.domain.Attachment">
+        <include refid="SELECTFILE"/>
+        and id = #{id}
+    </select>
+
+    <select id="findByIds" resultType="com.lec.spring.domain.Attachment"
+    parameterType="java.util.ArrayList">
+        <include refid="SELECTFILE"/>
+        and id in
+            <foreach collection="array" item="e" separator="," open="(" close=")">
+                #{e}
+            </foreach>
+        order by id asc
+    </select>
+
+    <delete id="deleteByIds" flushCache="true" parameterType="java.util.ArrayList">
+        delete from t5_attachment
+        where id in (
+            <foreach collection="array" item="e" separator=",">
+                #{e}
+            </foreach>
+        )
+    </delete>
+
+    <delete id="delete" flushCache="true">
+        DELETE FROM t5_attachment WHERE id = #{id}
+    </delete>
+
+</mapper>
